@@ -11,8 +11,11 @@ import gc
 # File path retrieval imports
 import os
 import sys
-sys.path.append("..\\..\\common")
+sys.path.append("..\\common")
 import utils
+
+
+spectrograms_directory = "..\\..\\..\\..\\..\\..\\FYP_Data\\spectrogram_images"
 
 
 def generate_spectrogram(track_path):
@@ -25,13 +28,33 @@ def generate_spectrogram(track_path):
     plt.colorbar(format='%+2.0f dB')
     plt.title(os.path.basename(track_path) + ' - mel spectrogram')
     plt.tight_layout()
-    plt.savefig("images\\" + os.path.splitext(os.path.basename(track_path))[0] + ".png")
+    plt.savefig(spectrograms_directory + "\\resumed\\" + os.path.splitext(os.path.basename(track_path))[0] + ".png")
     plt.close()
     gc.collect()
 
 
+def resume(track_paths):
+    completed_track_paths = utils.get_file_names(spectrograms_directory)
+
+    print('Previously completed spectrograms: ' + str(len(completed_track_paths)))
+
+    incomplete_track_paths = []
+    for _, path in enumerate(track_paths):
+        if os.path.splitext(os.path.basename(path))[0] not in completed_track_paths:
+            incomplete_track_paths.append(path)
+
+    return incomplete_track_paths
+
+
 if __name__ == '__main__':
-    track_paths = utils.getFiles("Q:\\fma_full")
+    print('Getting music file paths...')
+    track_paths = utils.get_files("Q:\\fma_full")
+    print('Music files identified: ' + str(len(track_paths)))
+
+    print('Checking previously created spectrograms...')
+    track_paths = resume(track_paths)
+    print('Number of spectrograms remaining to create: ' + str(len(track_paths)))
+
     pool = Pool(os.cpu_count())
     pool.map(generate_spectrogram, track_paths)
     pool.terminate()

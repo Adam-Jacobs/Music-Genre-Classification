@@ -11,7 +11,7 @@ import gc
 # File path retrieval imports
 import os
 import sys
-sys.path.append("..\\..\\common")
+sys.path.append("..\\common")
 import utils
 
 
