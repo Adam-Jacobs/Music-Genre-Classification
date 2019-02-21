@@ -35,12 +35,12 @@ def extract_features(track_path):
 
 
 if __name__ == '__main__':
-    track_paths = utils.getFiles("Q:\\fma_full")
+    track_paths = utils.get_files("Q:\\fma_full")
 
     tracks = []
 
     pool = Pool(os.cpu_count())
-    tracks.extend(pool.map(extract_features, track_paths[:200]))
+    tracks.extend(pool.map(extract_features, track_paths[:2000]))
     pool.terminate()
 
     np.savetxt("data\\features.csv", tracks, delimiter=",", fmt="%s")

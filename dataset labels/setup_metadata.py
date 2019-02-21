@@ -7,10 +7,11 @@ import pickle
 def load_metadata():
     genre_names = np.genfromtxt("genres.csv",
                                 dtype=None, delimiter=',', skip_header=1, usecols=(0, 3), encoding='utf8')
-    track_genres = np.genfromtxt("tracks_genres_cleaned.csv",
-                                 dtype=None, delimiter=',', skip_header=1, usecols=(0, 2), encoding='utf8')
     genre_top_levels = np.genfromtxt("genres.csv",
                                      dtype=None, delimiter=',', skip_header=1, usecols=(0, 4), encoding='utf8')
+    track_genres = np.genfromtxt("tracks_genres_cleaned.csv",
+                                 dtype=None, delimiter=',', skip_header=1, usecols=(0, 2), encoding='utf8')
+
     return genre_names, genre_top_levels, track_genres
 
 

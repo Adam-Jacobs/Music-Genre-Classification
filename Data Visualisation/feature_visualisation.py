@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import tsne
 import pickle
 
-# TODO Clear untagged tracks
+# TODO re-fix fix legend (after track genre association)
 
 genre_names = []
 pickle_in = open("..\\dataset labels\pickles\\genre_names.pickle", "rb")
@@ -50,7 +50,7 @@ def get_genre_colours(top_level_ids):
     return colours
 
 
-def get_labels_with_ignored_duplicates(labels):
+def get_labels_with_ignored_duplicates(labels): # This is for the legend of the plot
     new_labels = []
     for _, label in enumerate(labels):
         if label not in new_labels:
@@ -74,32 +74,61 @@ def get_labels():
     # Combine into one list for data visualisation
     label_lists = []
     label_lists.extend(training_labels)
-    #label_lists.extend(validation_labels)
-    #label_lists.extend(test_labels)
+    label_lists.extend(validation_labels)
+    label_lists.extend(test_labels)
 
     # Get only the top level ID
-    label_ids = [x[1][0] for x in label_lists]
-    labels_top_level = [get_genre_top_level(id) for id in label_ids]
+    genre_ids = [x[1][0] for x in label_lists]
+    labels_top_level = [get_genre_top_level(id) for id in genre_ids]
     colours = get_genre_colours(labels_top_level)
-    labels = [get_genre_name(id) for id in labels_top_level]
+    genre_labels = [get_genre_name(id) for id in labels_top_level]
+    
+    # Remove any duplicate labels for the legend to be accurate
+    #genre_labels = get_labels_with_ignored_duplicates(genre_labels)
+    
+    track_ids = [x[0] for x in label_lists]
 
-    labels = get_labels_with_ignored_duplicates(labels);
+    return [track_ids, colours, genre_labels]
 
-    return colours, labels
+
+class Track:
+
+    def __init__(self, id, features, colour, genre):
+        self.id = id
+        self.features = features
+        self.colour = colour
+        self.genre = genre
+
+
+def create_tracks(ids, features, plot_labels):
+    tracks = []
+
+    for id_index, id in enumerate(ids):
+        # Check if track has tagged genre data
+        if id in plot_labels[0]:
+            labels_index = plot_labels[0].index(id)
+            tracks.append(Track(id, features[id_index], plot_labels[1][labels_index], plot_labels[2][labels_index]))
+
+    return tracks
 
 
 if __name__ == "__main__":
-    X = np.loadtxt("features.csv", dtype='float', delimiter=',', usecols=list(range(1, 22)))
-    Y = tsne.tsne(X, 2, 50, 100.0)
-    colours, labels = get_labels()
+    print('Setting up data...')
+    track_ids = np.loadtxt("..\\Feature Extraction\\numerical features\\data\\features.csv", dtype='int',
+                           delimiter=',', usecols=0)
+    track_features = np.loadtxt("..\\Feature Extraction\\numerical features\\data\\features.csv", dtype=None,
+                                delimiter=',', usecols=range(1, 22))
 
-    # temp while data for all tracks hasn't been created yet
-    colours = colours[:200]
-    labels = labels[:200]
+    track_plot_labels = get_labels()
+
+    # Structure data to be more readable in Track objects
+    tracks = create_tracks(track_ids, track_features, track_plot_labels)
+
+    ax_vals = tsne.tsne(np.array([track.features for track in tracks]), 2, 50, 100.0)
 
     fig, ax = plt.subplots()
-    for i in range(0, len(labels)-1):
-        ax.scatter(Y[:, 0][i], Y[:, 1][i], 20, c=colours[i], label=labels[i])
+    for i in range(0, len(tracks)-1):
+        ax.scatter(ax_vals[:, 0][i], ax_vals[:, 1][i], 20, c=tracks[i].colour, label=tracks[i].genre)
 
     plt.legend(loc='lower left', ncol=3, fontsize=8)
     plt.show()

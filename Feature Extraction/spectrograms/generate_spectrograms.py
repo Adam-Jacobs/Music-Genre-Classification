@@ -28,7 +28,7 @@ def generate_spectrogram(track_path):
     plt.colorbar(format='%+2.0f dB')
     plt.title(os.path.basename(track_path) + ' - mel spectrogram')
     plt.tight_layout()
-    plt.savefig(spectrograms_directory + "\\resumed\\" + os.path.splitext(os.path.basename(track_path))[0] + ".png")
+    plt.savefig(spectrograms_directory + "\\" + os.path.splitext(os.path.basename(track_path))[0] + ".png")
     plt.close()
     gc.collect()
 
