@@ -5,11 +5,13 @@ import pickle
 
 
 def load_metadata():
-    genres = np.genfromtxt("genres.csv",
-                           dtype=None, delimiter=',', skip_header=1, usecols=(0, 3), encoding='utf8')
+    genre_names = np.genfromtxt("genres.csv",
+                                dtype=None, delimiter=',', skip_header=1, usecols=(0, 3), encoding='utf8')
     track_genres = np.genfromtxt("tracks_genres_cleaned.csv",
                                  dtype=None, delimiter=',', skip_header=1, usecols=(0, 2), encoding='utf8')
-    return genres, track_genres
+    genre_top_levels = np.genfromtxt("genres.csv",
+                                     dtype=None, delimiter=',', skip_header=1, usecols=(0, 4), encoding='utf8')
+    return genre_names, genre_top_levels, track_genres
 
 
 def filter_untagged_tracks(unfiltered_list):
@@ -29,6 +31,7 @@ def populate_data_subsets(data):
 
 
 genre_names = []
+genre_top_levels = []
 training_metadata = []
 validation_metadata = []
 test_metadata = []
@@ -37,7 +40,8 @@ test_metadata = []
 def setup_data():
     metadata = load_metadata()
     genre_names.extend(metadata[0])
-    populate_data_subsets(filter_untagged_tracks(metadata[1]))
+    genre_top_levels.extend(metadata[1])
+    populate_data_subsets(filter_untagged_tracks(metadata[2]))
     del metadata
 
 
@@ -68,6 +72,10 @@ if __name__ == "__main__":
     print('Saving data to pickles...')
     pickle_out = open("pickles\\genre_names.pickle", "wb")
     pickle.dump(genre_names, pickle_out)
+    pickle_out.close()
+
+    pickle_out = open("pickles\\genre_top_levels.pickle", "wb")
+    pickle.dump(genre_top_levels, pickle_out)
     pickle_out.close()
 
     pickle_out = open("pickles\\training_labels.pickle", "wb")
