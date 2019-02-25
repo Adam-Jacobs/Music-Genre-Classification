@@ -2,6 +2,8 @@ import numpy as np
 import os
 import cv2
 import pickle
+import tqdm
+from multiprocessing import Pool
 
 
 # Dimensions of spectrogram
@@ -15,15 +17,22 @@ image_size = image_sizeX * image_sizeY
 
 
 def load_spectrograms():
-    spectrogramsPath = "..\\..\\Feature Extraction\\Librosa\\spectrograms\\images"
+    spectrogramsPath = "..\\..\\..\\..\\..\\..\\FYP_Data\\spectrogram_images"
     data = []
-    for img in os.listdir(spectrogramsPath):
+    spectrogram_file_paths = os.listdir(spectrogramsPath)
+    for img in tqdm.tqdm(spectrogram_file_paths):
         try:
-            # The image is read in and cropped to include only the spectrogram and not the axis or labelling
-            dataPoint = cv2.imread(os.path.join(spectrogramsPath, img), cv2.IMREAD_GRAYSCALE)[image_startY:image_endY, image_startX:image_endX]
+            # Read the image into memory
+            data_point = cv2.imread(os.path.join(spectrogramsPath, img), cv2.IMREAD_GRAYSCALE)
+
+            # Crop to include only the spectrogram (thus removing the axis and labelling)
+            data_point = data_point[image_startY:image_endY, image_startX:image_endX]
+
+            # Scale the image down for better memory management
+            data_point = cv2.resize(data_point, (0, 0), fx=0.3, fy=0.3)  # ideally temporary until I figure a better way
 
             # Append the features and the track number to the list
-            data.append([dataPoint, img.split('.')[0]])
+            data.append([data_point, img.split('.')[0]])
         except Exception as e:
             print("Exception for reading image", e, os.path.join(spectrogramsPath, img))
 
@@ -37,7 +46,10 @@ test_labels = []
 
 
 def setup_data():
+    print('Loading spectrograms...')
     spectrograms.extend(load_spectrograms())
+
+    print('Loading subset labels...')
     pickle_in = open("..\\..\\fma_metadata_applied\\pickles\\training_labels.pickle", "rb")
     training_labels.extend(pickle.load(pickle_in))
 
@@ -55,12 +67,14 @@ def find_spectrogram_features(track_id):
 
 
 if __name__ == "__main__":
+    print('Setting up data...')
     setup_data()
 
     training_features = []
     validation_features = []
     test_features = []
 
+    print('Organising features into corect subsets...')
     for track_id, labels in training_labels:
         training_features.append(find_spectrogram_features(str(track_id)))
 
@@ -90,3 +104,10 @@ if __name__ == "__main__":
     pickle.dump(test_features, pickle_out)
     pickle_out.close()
 
+    # csv
+    allfeatures = []
+    allfeatures.extend(training_features)
+    allfeatures.extend(validation_features)
+    allfeatures.extend(test_features)
+
+    np.savetxt("data\\features.csv", allfeatures, delimiter=",", fmt="%s")
