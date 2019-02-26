@@ -112,23 +112,23 @@ def create_tracks(ids, features, plot_labels):
     return tracks
 
 
-if __name__ == "__main__":
+def create_tsne_plot(perplexity, num_tracks, image_name):
     print('Setting up data...')
     track_ids = np.loadtxt("..\\Feature Extraction\\numerical features\\data\\features.csv", dtype='int',
                            delimiter=',', usecols=0)
     track_features = np.loadtxt("..\\Feature Extraction\\numerical features\\data\\features.csv", dtype=None,
                                 delimiter=',', usecols=range(1, 22))
 
-    track_plot_labels = get_labels()
+    track_plot_labels = get_labels()[:num_tracks]
 
     # Structure data to be more readable in Track objects
-    tracks = create_tracks(track_ids, track_features, track_plot_labels)
+    tracks = create_tracks(track_ids, track_features, track_plot_labels)[:num_tracks]
 
-    ax_vals = tsne.tsne(np.array([track.features for track in tracks]), 2, 50, 100.0)
+    ax_vals = tsne.tsne(np.array([track.features for track in tracks]), 2, 50, perplexity)
 
     fig, ax = plt.subplots()
-    for i in range(0, len(tracks)-1):
+    for i in range(0, len(tracks) - 1):
         ax.scatter(ax_vals[:, 0][i], ax_vals[:, 1][i], 20, c=tracks[i].colour, label=tracks[i].genre)
 
     plt.legend(loc='lower left', ncol=3, fontsize=8)
-    plt.show()
+    plt.savefig('plots\\' + image_name + '.png')
