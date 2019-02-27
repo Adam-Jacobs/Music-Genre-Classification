@@ -10,7 +10,7 @@ import pickle
 pickle_in = open("genres.pickle", "rb")
 genres = pickle.load(pickle_in)
 
-pickle_in = open("training_features.pickle", "rb")
+pickle_in = open("feature_pickles\\training_features.pickle", "rb")
 training_features = pickle.load(pickle_in)
 
 pickle_in = open("training_labels.pickle", "rb")

@@ -3,8 +3,6 @@ import matplotlib.pyplot as plt
 import tsne
 import pickle
 
-# TODO re-fix fix legend (after track genre association)
-
 genre_names = []
 pickle_in = open("..\\dataset labels\pickles\\genre_names.pickle", "rb")
 genre_names.extend(pickle.load(pickle_in))
@@ -50,15 +48,13 @@ def get_genre_colours(top_level_ids):
     return colours
 
 
-def get_labels_with_ignored_duplicates(labels): # This is for the legend of the plot
+def get_labels_with_ignored_duplicates(tracks):  # This is for the plot legend
     new_labels = []
-    for _, label in enumerate(labels):
-        if label not in new_labels:
-            new_labels.append(label)
+    for _, track in enumerate(tracks):
+        if track.genre not in new_labels:
+            new_labels.append(track.genre)
         else:
-            new_labels.append('_' + label)
-
-    return new_labels
+            track.genre = '_' + track.genre
 
 
 def get_labels():
@@ -82,9 +78,6 @@ def get_labels():
     labels_top_level = [get_genre_top_level(id) for id in genre_ids]
     colours = get_genre_colours(labels_top_level)
     genre_labels = [get_genre_name(id) for id in labels_top_level]
-    
-    # Remove any duplicate labels for the legend to be accurate
-    #genre_labels = get_labels_with_ignored_duplicates(genre_labels)
     
     track_ids = [x[0] for x in label_lists]
 
@@ -119,10 +112,13 @@ def create_tsne_plot(perplexity, num_tracks, image_name):
     track_features = np.loadtxt("..\\Feature Extraction\\numerical features\\data\\features.csv", dtype=None,
                                 delimiter=',', usecols=range(1, 22))
 
-    track_plot_labels = get_labels()[:num_tracks]
+    track_plot_labels = get_labels()
 
     # Structure data to be more readable in Track objects
     tracks = create_tracks(track_ids, track_features, track_plot_labels)[:num_tracks]
+
+    # Remove any duplicate labels for the legend to be accurate
+    get_labels_with_ignored_duplicates(tracks)
 
     ax_vals = tsne.tsne(np.array([track.features for track in tracks]), 2, 50, perplexity)
 
@@ -130,5 +126,5 @@ def create_tsne_plot(perplexity, num_tracks, image_name):
     for i in range(0, len(tracks) - 1):
         ax.scatter(ax_vals[:, 0][i], ax_vals[:, 1][i], 20, c=tracks[i].colour, label=tracks[i].genre)
 
-    plt.legend(loc='lower left', ncol=3, fontsize=8)
-    plt.savefig('plots\\' + image_name + '.png')
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), fancybox=True, shadow=True, ncol=4, fontsize=10)
+    plt.savefig('plots\\' + image_name + '.png', bbox_inches="tight")

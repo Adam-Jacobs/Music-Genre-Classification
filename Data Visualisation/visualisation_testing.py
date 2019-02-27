@@ -7,8 +7,8 @@ if __name__ == "__main__":
     step_num = int(input('Step amount: '))
     num_tracks = int(input('Number of tracks to create the plot from: '))
 
-    num_plots = perplex_upper / step_num
+    num_plots = int(perplex_upper / step_num)
     print('This will generate ' + str(num_plots) + ' plots')
 
-    for perplexity in range(step_num, perplex_upper, step_num):
-        vis.create_tsne_plot(perplexity, num_tracks, 'perplexity=' + str(perplexity))
+    for perplexity in range(step_num, perplex_upper + 1, step_num):
+        vis.create_tsne_plot(perplexity, num_tracks, str(num_tracks) + ' tracks, perplexity=' + str(perplexity))
