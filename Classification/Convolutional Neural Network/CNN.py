@@ -7,13 +7,13 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D
 
 import pickle
 
-pickle_in = open("genres.pickle", "rb")
-genres = pickle.load(pickle_in)
+#pickle_in = open("genres.pickle", "rb")
+#genres = pickle.load(pickle_in)
 
 pickle_in = open("feature_pickles\\training_features.pickle", "rb")
 training_features = pickle.load(pickle_in)
 
-pickle_in = open("training_labels.pickle", "rb")
+pickle_in = open("..\\..\\dataset labels\\pickles\\training_labels.pickle", "rb")
 training_labels = pickle.load(pickle_in)
 
 # X = X/255.0 # is normalisation needed?
