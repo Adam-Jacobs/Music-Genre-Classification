@@ -57,7 +57,6 @@ def load_spectrograms():
 spectrograms_ids = []
 spectrograms_features = []
 training_labels = []
-validation_labels = []
 test_labels = []
 
 
@@ -82,7 +81,7 @@ def setup_data():
     training_labels.extend(pickle.load(pickle_in))
 
     pickle_in = open("..\\..\\dataset labels\\pickles\\validation_labels.pickle", "rb")
-    validation_labels.extend(pickle.load(pickle_in))
+    training_labels.extend(pickle.load(pickle_in))
 
     pickle_in = open("..\\..\\dataset labels\\pickles\\testing_labels.pickle", "rb")
     test_labels.extend(pickle.load(pickle_in))
@@ -96,16 +95,11 @@ if __name__ == "__main__":
     pool = Pool(os.cpu_count() - 1)
 
     training_features = []
-    validation_features = []
     test_features = []
 
     print('Organising training set...')
     for track_id, labels in tqdm.tqdm(training_labels):
         training_features.append(spectrograms_features[spectrograms_ids.index('{:06d}'.format(int(track_id)))])
-
-    print('Organising validation set...')
-    for track_id, labels in tqdm.tqdm(validation_labels):
-        validation_features.append(spectrograms_features[spectrograms_ids.index('{:06d}'.format(int(track_id)))])
 
     print('Organising testing set...')
     for track_id, labels in tqdm.tqdm(test_labels):
@@ -114,7 +108,6 @@ if __name__ == "__main__":
     # csv
     # allfeatures = []
     # allfeatures.extend(training_features)
-    # allfeatures.extend(validation_features)
     # allfeatures.extend(test_features)
 
     # np.savetxt("feature_pickles\\features.csv", [x[1] if x is not None else None for x in allfeatures],
@@ -122,17 +115,12 @@ if __name__ == "__main__":
 
     # Reshape the features ready for use with CNN
     training_features = np.array(training_features).reshape(-1, image_scaled_sizeY, image_scaled_sizeX, 1)
-    validation_features = np.array(validation_features).reshape(-1, image_scaled_sizeY, image_scaled_sizeX, 1)
     test_features = np.array(test_features).reshape(-1, image_scaled_sizeY, image_scaled_sizeX, 1)
 
     # Save the data
     print('Saving data to pickles...')
     pickle_out = open("feature_pickles\\training_features.pickle", "wb")
     pickle.dump(training_features, pickle_out)
-    pickle_out.close()
-
-    pickle_out = open("feature_pickles\\validation_features.pickle", "wb")
-    pickle.dump(validation_features, pickle_out)
     pickle_out.close()
 
     pickle_out = open("feature_pickles\\test_features.pickle", "wb")

@@ -45,7 +45,10 @@ def filter_untagged_tracks(unfiltered_list):
     for _, item in enumerate(unfiltered_list):
         genres = get_labels_from_genre_tags(item[1])
         if len(genres) > 0 and genres[0] != '':
-            track_genres.append([item[0], lm.get_genre_top_level(genres[0])])
+            genre = lm.get_genre_top_level(genres[0])
+            if genre != -1:
+                track_genres.append([item[0], lm.categorise_genre(genre)])
+
     return track_genres
 
 
