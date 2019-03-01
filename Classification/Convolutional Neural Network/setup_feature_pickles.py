@@ -112,21 +112,21 @@ if __name__ == "__main__":
         test_features.append(spectrograms_features[spectrograms_ids.index('{:06d}'.format(int(track_id)))])
 
     # csv
-    allfeatures = []
-    allfeatures.extend(training_features)
-    allfeatures.extend(validation_features)
-    allfeatures.extend(test_features)
+    # allfeatures = []
+    # allfeatures.extend(training_features)
+    # allfeatures.extend(validation_features)
+    # allfeatures.extend(test_features)
 
-    np.savetxt("feature_pickles\\features.csv", [x[1] if x is not None else None for x in allfeatures], delimiter=",", fmt="%s")
+    # np.savetxt("feature_pickles\\features.csv", [x[1] if x is not None else None for x in allfeatures],
+    #            delimiter=",", fmt="%s")
 
     # Reshape the features ready for use with CNN
-    training_features = np.array(training_features).reshape(-1, image_scaled_sizeX, image_scaled_sizeY, 1)
-    validation_features = np.array(validation_features).reshape(-1, image_scaled_sizeX, image_scaled_sizeY, 1)
-    test_features = np.array(test_features).reshape(-1, image_scaled_sizeX, image_scaled_sizeY, 1)
+    training_features = np.array(training_features).reshape(-1, image_scaled_sizeY, image_scaled_sizeX, 1)
+    validation_features = np.array(validation_features).reshape(-1, image_scaled_sizeY, image_scaled_sizeX, 1)
+    test_features = np.array(test_features).reshape(-1, image_scaled_sizeY, image_scaled_sizeX, 1)
 
     # Save the data
     print('Saving data to pickles...')
-
     pickle_out = open("feature_pickles\\training_features.pickle", "wb")
     pickle.dump(training_features, pickle_out)
     pickle_out.close()
