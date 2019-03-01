@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import os
 import random
 import pickle
@@ -9,15 +10,9 @@ def load_metadata():
                                 dtype=None, delimiter=',', skip_header=1, usecols=(0, 3), encoding='utf8')
     genre_top_levels = np.genfromtxt("genres.csv",
                                      dtype=None, delimiter=',', skip_header=1, usecols=(0, 4), encoding='utf8')
-    track_genres = np.genfromtxt("tracks_genres_cleaned.csv",
-                                 dtype=None, delimiter=',', skip_header=1, usecols=(0, 2), encoding='utf8')
+    track_genres = pd.read_csv("tracks_genres_cleaned.csv", quotechar='"', skipinitialspace=True, header=0, usecols=['track_id', 'genres'])
 
-    return genre_names, genre_top_levels, track_genres
-
-
-def filter_untagged_tracks(unfiltered_list):
-    filtered_list = [x for x in unfiltered_list if '[]' not in x[1]]
-    return filtered_list
+    return genre_names, genre_top_levels, track_genres.values
 
 
 def populate_data_subsets(data):
@@ -42,13 +37,24 @@ def setup_data():
     metadata = load_metadata()
     genre_names.extend(metadata[0])
     genre_top_levels.extend(metadata[1])
-    populate_data_subsets(filter_untagged_tracks(metadata[2]))
+    filtered_data = filter_untagged_tracks(metadata[2])
+    populate_data_subsets(filtered_data)
     del metadata
+    del filtered_data
 
 
 def get_labels_from_genre_tags(genre_tags):
     # Change the format of the genre ids for this track from a string '[a, b, c]' to an array of genre ids
-    return genre_tags.replace('[', '').replace(']', '').replace('\"', '').replace(' ', '').split(',')
+    return str(genre_tags).replace('[', '').replace(']', '').replace('\"', '').replace(' ', '').split(',')
+
+
+def filter_untagged_tracks(unfiltered_list):
+    track_genres = []
+    for _, item in enumerate(unfiltered_list):
+        genres = get_labels_from_genre_tags(item[1])
+        if len(genres) > 0:
+            track_genres.append([item[0], genres])
+    return track_genres
 
 
 if __name__ == "__main__":
@@ -61,13 +67,13 @@ if __name__ == "__main__":
     test_labels = []
 
     for track_id, genres in training_metadata:
-        training_labels.append([track_id, get_labels_from_genre_tags(genres)])
+        training_labels.append([track_id, genres])
 
     for track_id, genres in validation_metadata:
-        validation_labels.append([track_id, get_labels_from_genre_tags(genres)])
+        validation_labels.append([track_id, genres])
 
     for track_id, genres in test_metadata:
-        test_labels.append([track_id, get_labels_from_genre_tags(genres)])
+        test_labels.append([track_id, genres])
 
     # Save the data
     print('Saving data to pickles...')

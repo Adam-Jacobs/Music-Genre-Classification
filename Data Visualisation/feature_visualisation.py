@@ -2,14 +2,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tsne
 import pickle
+import sys
+sys.path.append("..\\common")
+import label_manipulation as lm
 
 genre_names = []
 pickle_in = open("..\\dataset labels\pickles\\genre_names.pickle", "rb")
 genre_names.extend(pickle.load(pickle_in))
-
-genre_top_levels = []
-pickle_in = open("..\\dataset labels\pickles\\genre_top_levels.pickle", "rb")
-genre_top_levels.extend(pickle.load(pickle_in))
 
 top_level_available_colours = ["red", "yellow", "orange", "darkred",
                                    "blue", "purple", "darkblue", "cyan",
@@ -22,13 +21,6 @@ def get_genre_name(id):
         if str(id) == str(pair[0]):
             return pair[1]
     return 'Error'
-
-
-def get_genre_top_level(id):
-    for _, pair in enumerate(genre_top_levels):
-        if str(id) == str(pair[0]):
-            return pair[1]
-    return -1
 
 
 def get_genre_colours(top_level_ids):
@@ -75,7 +67,7 @@ def get_labels():
 
     # Get only the top level ID
     genre_ids = [x[1][0] for x in label_lists]
-    labels_top_level = [get_genre_top_level(id) for id in genre_ids]
+    labels_top_level = [lm.get_genre_top_level(id) for id in genre_ids]
     colours = get_genre_colours(labels_top_level)
     genre_labels = [get_genre_name(id) for id in labels_top_level]
     

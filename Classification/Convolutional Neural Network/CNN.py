@@ -17,7 +17,7 @@ pickle_in = open("..\\..\\dataset labels\\pickles\\training_labels.pickle", "rb"
 training_labels = pickle.load(pickle_in)
 
 # X = X/255.0 # is normalisation needed?
-
+print(training_labels[:10])
 model = Sequential()
 
 model.add(Conv2D(256, (3, 3), input_shape=training_features.shape[1:]))
@@ -39,4 +39,4 @@ model.compile(loss='binary_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])
 
-model.fit(X, y, batch_size=32, epochs=3, validation_split=0.3)
+model.fit(training_features, training_labels, batch_size=32, epochs=3, validation_split=0.3)
