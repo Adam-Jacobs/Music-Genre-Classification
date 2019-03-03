@@ -102,7 +102,7 @@ def create_tsne_plot(perplexity, num_tracks, image_name):
     track_ids = np.loadtxt("..\\Feature Extraction\\numerical features\\data\\features.csv", dtype='int',
                            delimiter=',', usecols=0)
     track_features = np.loadtxt("..\\Feature Extraction\\numerical features\\data\\features.csv", dtype=None,
-                                delimiter=',', usecols=range(1, 22))
+                                delimiter=',', usecols=range(1, 23))
 
     track_plot_labels = get_labels()
 

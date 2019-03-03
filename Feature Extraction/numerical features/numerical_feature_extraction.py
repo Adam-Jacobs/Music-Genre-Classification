@@ -31,6 +31,10 @@ def extract_features(track_path):
     for i in range(0, 20):
         features.append(mfccs[i].sum() / mfccs[i].size)
 
+    # Spectral Centroid
+    cent = librosa.feature.spectral_centroid(y=y, sr=sr)
+    features.append(cent[0].sum() / cent[0].size)
+
     return features
 
 
