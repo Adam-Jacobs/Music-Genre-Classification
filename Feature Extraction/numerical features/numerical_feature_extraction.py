@@ -1,3 +1,6 @@
+import tqdm
+import warnings
+
 # Feature extraction imports
 import librosa
 import numpy as np
@@ -42,9 +45,10 @@ if __name__ == '__main__':
     track_paths = utils.get_files("Q:\\fma_full")
 
     tracks = []
+    test_num = 100
 
-    pool = Pool(os.cpu_count())
-    tracks.extend(pool.map(extract_features, track_paths[:2000]))
-    pool.terminate()
+    with Pool(os.cpu_count()) as pool:
+        tracks.extend(tqdm.tqdm(pool.imap(extract_features, track_paths[:test_num]), total=test_num))
+    # pool.terminate() # unnecessary with 'with'?
 
     np.savetxt("data\\features.csv", tracks, delimiter=",", fmt="%s")
