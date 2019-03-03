@@ -106,12 +106,9 @@ if __name__ == "__main__":
         test_features.append(spectrograms_features[spectrograms_ids.index('{:06d}'.format(int(track_id)))])
 
     # csv
-    allfeatures = []
-    allfeatures.extend(training_features)
-    allfeatures.extend(test_features)
-
-    np.savetxt("feature_pickles\\features.csv", [x[1] if x is not None else None for x in allfeatures],
-               delimiter=",", fmt="%s")
+    # print('Saving training features to csv...')
+    # np.savetxt("feature_pickles\\training_features.csv", [x[1] if x is not None else None for x in training_features],
+    #            delimiter=",", fmt="%s")
 
     # Reshape the features ready for use with CNN
     training_features = np.array(training_features).reshape(-1, image_scaled_sizeY, image_scaled_sizeX, 1)

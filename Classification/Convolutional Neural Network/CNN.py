@@ -15,6 +15,9 @@ train_features = pickle.load(pickle_in)
 pickle_in = open("..\\..\\dataset labels\\pickles\\training_labels.pickle", "rb")
 train_labels = pickle.load(pickle_in)
 
+pickle_in = open("..\\..\\dataset labels\\pickles\\validation_labels.pickle", "rb")
+train_labels.extend(pickle.load(pickle_in))
+
 pickle_in = open("feature_pickles\\test_features.pickle", "rb")
 test_features = pickle.load(pickle_in)
 
