@@ -43,7 +43,6 @@ def load_spectrograms():
     spectrograms_dir = "..\\..\\..\\..\\..\\..\\FYP_Data\\spectrogram_images"
     spectrogram_file_paths = os.listdir(spectrograms_dir)
     spectrogram_file_paths = [os.path.join(spectrograms_dir, x) for x in spectrogram_file_paths]
-    spectrogram_file_paths = spectrogram_file_paths
 
     data = []
 

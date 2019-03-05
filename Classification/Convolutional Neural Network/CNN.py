@@ -9,6 +9,9 @@ from keras.utils import to_categorical
 import model_state_IO as modelIO
 import pickle
 
+model_name = input('Please input the name of this model: ')
+
+print('Loading training & test data...')
 pickle_in = open("feature_pickles\\training_features.pickle", "rb")
 train_features = pickle.load(pickle_in)
 
@@ -24,13 +27,9 @@ test_features = pickle.load(pickle_in)
 pickle_in = open("..\\..\\dataset labels\\pickles\\testing_labels.pickle", "rb")
 test_labels = pickle.load(pickle_in)
 
-#temp to see how it trains
-train_features = train_features[:1000]
-train_labels = train_labels[:1000]
-test_features = train_features[:1000]
-test_labels = train_labels[:1000]
-
 # train_features = train_features/255.0 # is normalisation needed?
+
+print('Creating CNN model...')
 model = Sequential()
 
 # Input layer
@@ -55,10 +54,12 @@ model.compile(loss='categorical_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])
 
+print('Training CNN...')
 model.fit(train_features, to_categorical(np.array([x[1] for x in train_labels])),
-          batch_size=12, epochs=2, validation_split=((len(train_labels) + len(test_labels))/10))
+          batch_size=12, epochs=3, validation_split=((len(train_labels) + len(test_labels))/10))
 
+print('Evaluating CNN performance...')
 scores = model.evaluate(test_features, to_categorical(np.array([x[1] for x in test_labels])))
 print("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
 
-modelIO.save_model(model, 'first')
+modelIO.save_model(model, model_name)
