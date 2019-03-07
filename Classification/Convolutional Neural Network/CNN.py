@@ -8,7 +8,10 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D
 from keras.utils import to_categorical
 import model_state_IO as modelIO
 import pickle
+import os
 
+
+os.system('mode con: cols=180 lines=40')
 model_name = input('Please input the name of this model: ')
 
 print('Loading training & test data...')
@@ -56,7 +59,8 @@ model.compile(loss='categorical_crossentropy',
 
 print('Training CNN...')
 model.fit(train_features, to_categorical(np.array([x[1] for x in train_labels])),
-          batch_size=12, epochs=3, validation_split=((len(train_labels) + len(test_labels))/10))
+          batch_size=12, epochs=3,
+          validation_split=(((len(train_labels) + len(test_labels))/10) / (len(train_labels) + len(test_labels))))
 
 print('Evaluating CNN performance...')
 scores = model.evaluate(test_features, to_categorical(np.array([x[1] for x in test_labels])))
