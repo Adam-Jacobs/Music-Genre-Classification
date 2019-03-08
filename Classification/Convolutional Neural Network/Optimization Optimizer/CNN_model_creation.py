@@ -93,7 +93,7 @@ def get_batch_size():
 
 def get_num_epochs():
     num_epochs_min = 1
-    num_epochs_max = 1  # Because Time
+    num_epochs_max = 15  # Because Time
 
     num_epochs = random.randint(num_epochs_min, num_epochs_max)
 
@@ -104,7 +104,7 @@ def get_num_epochs():
 
 def get_validation_split_num():
     validation_split_min = 0.0
-    validation_split_max = 0.99
+    validation_split_max = 0.5
 
     validation_split = random.uniform(validation_split_min, validation_split_max)
     # Make it more likely to have a lower validation split

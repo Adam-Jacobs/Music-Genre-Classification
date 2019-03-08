@@ -44,11 +44,12 @@ def extract_features(track_path):
 if __name__ == '__main__':
     track_paths = utils.get_files("Q:\\fma_full")
 
-    tracks = []
-    test_num = 100
+    resume_interval = 100
 
-    with Pool(os.cpu_count()) as pool:
-        tracks.extend(tqdm.tqdm(pool.imap(extract_features, track_paths[:test_num]), total=test_num))
-    # pool.terminate() # unnecessary with 'with'?
+    for i in range(len(os.listdir("data")) * resume_interval, len(track_paths), resume_interval):
+        tracks = []
 
-    np.savetxt("data\\features.csv", tracks, delimiter=",", fmt="%s")
+        with Pool(os.cpu_count()) as pool:
+            tracks.extend(tqdm.tqdm(pool.imap(extract_features, track_paths[i:i+resume_interval]), total=resume_interval))
+
+        np.savetxt("data\\features" + str(int(i / resume_interval)) + ".csv", tracks, delimiter=",", fmt="%s")

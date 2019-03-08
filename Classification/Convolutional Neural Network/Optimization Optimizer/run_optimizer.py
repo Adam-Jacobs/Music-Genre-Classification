@@ -37,7 +37,7 @@ test_labels = pickle.load(pickle_in)
 
 # train_features = train_features/255.0 # is normalisation needed?
 
-for _ in range(2):
+for _ in range(1000):
     Create.reset()
     print('Creating CNN model...')
     model = Sequential()
