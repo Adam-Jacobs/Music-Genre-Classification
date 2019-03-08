@@ -14,8 +14,6 @@ import sys
 sys.path.append("..\\")
 import model_state_IO as modelIO
 
-# TODO - change saving data to csv from numpy - maybe pandas?
-
 os.system('mode con: cols=220 lines=40')
 # model_name = input('Please input the name of this model: ')
 
