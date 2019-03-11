@@ -90,9 +90,6 @@ if __name__ == "__main__":
     print('Setting up data...')
     setup_data()
 
-    print('Organising features into correct subsets...')
-    pool = Pool(os.cpu_count() - 1)
-
     training_features = []
     test_features = []
 

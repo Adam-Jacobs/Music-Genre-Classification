@@ -15,7 +15,7 @@ import label_manipulation as lm
 
 
 os.system('mode con: cols=180 lines=40')
-#model_name = input('Please input the name of this model: ')
+model_name = input('Please input the name of this model: ')
 
 
 print('Loading training & test data...')
@@ -85,9 +85,9 @@ model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 
 # Hidden Layer
-#model.add(Conv2D(256, (3, 3)))
-#model.add(Activation('relu'))
-#model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Conv2D(256, (3, 3)))
+model.add(Activation('relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
 
 model.add(Flatten())  # converts 3D feature maps to 1D vectors
 
