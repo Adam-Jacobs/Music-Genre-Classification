@@ -6,7 +6,11 @@ top_level_genres = []
 
 
 def load_genres():
-    pickle_in = open("..\\dataset labels\pickles\\genre_top_levels.pickle", "rb")
+    try:
+        pickle_in = open("..\\dataset labels\pickles\\genre_top_levels.pickle", "rb")
+    except Exception:
+        pickle_in = open("..\\..\\dataset labels\pickles\\genre_top_levels.pickle", "rb")
+
     genre_top_levels.extend(pickle.load(pickle_in))
 
     for _, pair in enumerate(genre_top_levels):
@@ -25,6 +29,7 @@ def get_genre_top_level(id):
     return -1
 
 
+# Forces genre labels into values 0 - 15
 def categorise_genre(genre):
     if len(genre_top_levels) == 0:
         load_genres()

@@ -38,6 +38,8 @@ def extract_features(track_path):
     cent = librosa.feature.spectral_centroid(y=y, sr=sr)
     features.append(cent[0].sum() / cent[0].size)
 
+    gc.collect()
+
     return features
 
 
@@ -49,7 +51,9 @@ if __name__ == '__main__':
     for i in range(len(os.listdir("data")) * resume_interval, len(track_paths), resume_interval):
         tracks = []
 
-        with Pool(os.cpu_count()) as pool:
+        with Pool(os.cpu_count() - 2) as pool:
             tracks.extend(tqdm.tqdm(pool.imap(extract_features, track_paths[i:i+resume_interval]), total=resume_interval))
+
+        gc.collect()
 
         np.savetxt("data\\features" + str(int(i / resume_interval)) + ".csv", tracks, delimiter=",", fmt="%s")
