@@ -97,17 +97,27 @@ def create_tracks(ids, features, plot_labels):
     return tracks
 
 
-def create_tsne_plot(perplexity, num_tracks, image_name):
+def create_tsne_plot(perplexity, num_tracks, feature_type, image_name):
     print('Setting up data...')
-    track_ids = np.loadtxt("..\\Feature Extraction\\numerical features\\data\\features.csv", dtype='int',
-                           delimiter=',', usecols=0)
-    track_features = np.loadtxt("..\\Feature Extraction\\numerical features\\data\\features.csv", dtype=None,
-                                delimiter=',', usecols=range(1, 23))
+
+    if feature_type == 'SF':
+        pickle_in = open("..\\Classification\\Convolutional Neural Network\\feature_pickles\\spectrogram_features_unsorted.pickle", "rb")
+        ids_and_features = pickle.load(pickle_in)
+
+        track_ids = [int(x[0]) for x in ids_and_features[:num_tracks]]
+        track_features = [x[1] for x in ids_and_features[:num_tracks]]
+        # Flatten to 1d array
+        track_features = np.array(track_features).reshape(num_tracks, -1)
+    else:
+        track_ids = np.loadtxt("..\\Feature Extraction\\numerical features\\data\\features.csv", dtype='int',
+                               delimiter=',', usecols=0)[:num_tracks]
+        track_features = np.loadtxt("..\\Feature Extraction\\numerical features\\data\\features.csv", dtype=None,
+                                    delimiter=',', usecols=range(1, 23))[:num_tracks]
 
     track_plot_labels = get_labels()
 
     # Structure data to be more readable in Track objects
-    tracks = create_tracks(track_ids, track_features, track_plot_labels)[:num_tracks]
+    tracks = create_tracks(track_ids, track_features, track_plot_labels)
 
     # Remove any duplicate labels for the legend to be accurate
     get_labels_with_ignored_duplicates(tracks)
@@ -119,4 +129,4 @@ def create_tsne_plot(perplexity, num_tracks, image_name):
         ax.scatter(ax_vals[:, 0][i], ax_vals[:, 1][i], 20, c=tracks[i].colour, label=tracks[i].genre)
 
     ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), fancybox=True, shadow=True, ncol=4, fontsize=10)
-    plt.savefig('plots\\' + image_name + '.png', bbox_inches="tight")
+    plt.savefig('plots_' + feature_type + '\\' + image_name + '.png', bbox_inches="tight")
