@@ -16,12 +16,13 @@ class ModelAttributes:
         self.batch_size = -1
         self.loss = -1
         self.accuracy = -1
+        self.train_time = -1
         self.layers = []
 
     '''Returns a 1D array of strings'''
     def get_writable(self):
         writable = [self.id, self.optimizer_name, self.learning_rate, self.validation_split,
-                    self.num_epochs, self.batch_size, self.loss, self.accuracy]
+                    self.num_epochs, self.batch_size, self.loss, self.accuracy, self.train_time]
 
         for layer in self.layers:
             writable.append(layer.type_name)
@@ -34,7 +35,7 @@ class ModelAttributes:
     '''Returns a 1D array of strings'''
     def get_header_writable(self):
         header = ['id', 'optimizer_name', 'learning_rate', 'validation_split', 'num_epochs',
-                  'batch_size', 'loss', 'accuracy', 'layers-->']
+                  'batch_size', 'loss', 'accuracy', 'train_time', 'layers-->']
 
         return header
 

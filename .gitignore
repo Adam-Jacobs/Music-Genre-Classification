@@ -3,6 +3,4 @@
 *.csv
 *.h5
 *.json
-*.pickle
 *.pyc
-*.pickle

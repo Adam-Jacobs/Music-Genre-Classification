@@ -7,10 +7,11 @@ from keras.utils import to_categorical
 # import model_state_IO as modelIO
 import os
 import pickle
-import CNN_model_creation as Create
+import CNN_R_model_creation as Create
 import model_attributes as MA
 import csv
 import sys
+import time
 sys.path.append("..\\")
 import model_state_IO as modelIO
 
@@ -59,15 +60,19 @@ for _ in range(1000):
                   metrics=['categorical_accuracy'])
 
     print('Training CNN...')
+
+    start_train_time = time.time()
     model.fit(train_features, to_categorical(np.array([x[1] for x in train_labels])),
               batch_size=Create.get_batch_size(), epochs=Create.get_num_epochs(),
               validation_split=Create.get_validation_split_num())
+    end_train_time = time.time()
 
     print('Evaluating CNN performance...')
     scores = model.evaluate(test_features, to_categorical(np.array([x[1] for x in test_labels])))
 
     Create.model_attributes.loss = scores[0]
     Create.model_attributes.accuracy = scores[1]
+    Create.train_time = end_train_time - start_train_time
 
     filename = "model_configs.csv"
 

@@ -12,19 +12,6 @@ import model_attributes as MA
 # TODO - expose only relevant methods to an outside script
 # TODO - Add Dropout layer babyyy
 
-# Increment Types
-# incremental1 = [1, 2, 3, 4, 5]        # num_val=5, total=15 , av=3
-# incremental2 = [1, 2, 3, 4, 5, 6]     # num_val=6, total=21 , av=3.5
-# incremental3 = [1, 2, 3, 4, 5, 6, 7]  # num_val=7, total=28 , av=4
-
-# fibonacci1 = [1, 2, 3, 5, 8]          # num_val=5, total=19 , av=3.8
-# fibonacci2 = [1, 2, 3, 5, 8, 13]      # num_val=6, total=32 , av=5.33
-# fibonacci3 = [1, 2, 3, 5, 8, 13, 21]  # num_val=7, total=53 , av=7.57
-
-# binary1 = [1, 2, 4, 8, 16]            # num_val=5, total=31 , av=6.2
-# binary2 = [1, 2, 4, 8, 16, 32]        # num_val=6, total=63 , av=10.5
-# binary3 = [1, 2, 4, 8, 16, 32, 64]    # num_val=7, total=127, av=18.143
-
 model_attributes = MA.ModelAttributes()
 
 # Categorical Types
@@ -82,7 +69,7 @@ def get_optimizer():
 
 def get_batch_size():
     batch_size_min = 1
-    batch_size_max = 25  # Because Memory
+    batch_size_max = 20  # Because Memory
 
     batch_size = random.randint(batch_size_min, batch_size_max)
 
@@ -93,7 +80,7 @@ def get_batch_size():
 
 def get_num_epochs():
     num_epochs_min = 1
-    num_epochs_max = 15  # Because Time
+    num_epochs_max = 12  # Because Time
 
     num_epochs = random.randint(num_epochs_min, num_epochs_max)
 
@@ -117,14 +104,14 @@ def get_validation_split_num():
 
 def get_num_layers():
     layer_min = 0
-    layer_max = 15  # Because Memory
+    layer_max = 12  # Because Memory
 
     return random.randint(layer_min, layer_max)
 
 
 def get_num_neurons():
     neuron_min = 1
-    neuron_max = 300  # Because Memory
+    neuron_max = 400  # Because Memory
 
     return random.randint(neuron_min, neuron_max)
 

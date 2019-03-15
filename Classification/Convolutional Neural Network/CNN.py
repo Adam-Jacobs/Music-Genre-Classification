@@ -66,7 +66,27 @@ def cut_all_but_3_genres():
     test_features, test_labels = cut_genres_from_list(test_features, test_labels)
 
 
+def normalise_data():
+    global train_features, test_features
+
+    for x in range(0, len(train_features)):
+        for y in range(0, len(train_features[x])):
+            train_features[x][y] = train_features[x][y] / 255
+
+    for x in range(0, len(test_features)):
+        for y in range(0, len(test_features[x])):
+            test_features[x][y] = test_features[x][y] / 255
+
+
+def data_to_int(data):
+    for x in range(0, len(data)):
+        for y in range(0, len(data[x])):
+            data[x][y] = int(data[x][y])
+
+    return data
+
 # cut_all_but_3_genres()
+
 
 prediction_features = test_features[2001: 2010]
 prediction_labels = test_labels[2001: 2010]
@@ -75,6 +95,8 @@ train_features = train_features[:2000]
 train_labels = train_labels[:2000]
 test_features = test_features[:2000]
 test_labels = test_labels[:2000]
+
+# normalise_data()
 
 print('Creating CNN model...')
 model = Sequential()
@@ -113,6 +135,8 @@ print("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
 
 predictions = model.predict(np.array(prediction_features))
 
+predictions = data_to_int(predictions)
+
 print('Predictions: ')
 print(predictions)
 
@@ -122,6 +146,6 @@ for i, l in enumerate(prediction_labels):
     labels_to_output.append([l[0], categorised_prediction_labels[i]])
 
 print('Correct labels:')
-print(labels_to_output)
+print(categorised_prediction_labels)
 
 # modelIO.save_model(model, model_name)
