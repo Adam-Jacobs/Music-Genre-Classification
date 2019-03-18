@@ -15,7 +15,7 @@ import model_attributes as MA
 model_attributes = MA.ModelAttributes()
 
 # Categorical Types
-layer_types = ['Conv2D', 'MaxPooling2D', 'Dense']
+layer_types = ['Conv2D', 'MaxPooling2D', 'Dense', 'Dropout']
 activation_functions = ['softmax', 'elu', 'selu', 'softplus', 'softsign', 'relu',
                         'tanh', 'hard_sigmoid', 'exponential', 'linear',  '']
 optimizer_names = ['SGD', 'RMSprop', 'Adagrad', 'Adadelta', 'Adam', 'Adamax', 'Nadam']

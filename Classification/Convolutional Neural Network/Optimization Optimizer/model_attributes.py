@@ -7,6 +7,18 @@ class Layer:
 
 
 class ModelAttributes:
+    # Discrete spaces
+    layer_type_action_space = ['Conv2D', 'MaxPooling2D', 'Dense', 'Dropout']
+    activation_function_action_space = ['softmax', 'elu', 'selu', 'softplus', 'softsign', 'relu',
+                                        'tanh', 'hard_sigmoid', 'exponential', 'linear', '']
+    optimizer_action_space = ['SGD', 'RMSprop', 'Adagrad', 'Adadelta', 'Adam', 'Adamax', 'Nadam']
+
+    # Continuous spaces
+    learning_rate_action_space = -1
+    validation_split_action_space = -1
+    num_epochs_action_space = -1
+    batch_size_action_space = -1
+
     def __init__(self):
         self.id = -1
         self.optimizer_name = ''

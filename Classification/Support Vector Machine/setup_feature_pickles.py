@@ -4,7 +4,7 @@ import tqdm
 
 
 if __name__ == "__main__":
-    features_unsorted = np.genfromtxt("..\\..\\Feature Extraction\\numerical features\\data\\features.csv",
+    numerical_unsorted = np.genfromtxt("..\\..\\Feature Extraction\\numerical features\\data\\features.csv",
                                       dtype=None, delimiter=',', encoding='utf8')
 
     pickle_in = open("..\\..\\dataset labels\\pickles\\training_labels.pickle", "rb")
@@ -16,18 +16,21 @@ if __name__ == "__main__":
     pickle_in = open("..\\..\\dataset labels\\pickles\\testing_labels.pickle", "rb")
     test_labels = pickle.load(pickle_in)
 
-    features_unsorted_ids = [x[0] for x in features_unsorted]
+    unsorted_ids = [x[0] for x in numerical_unsorted]
+    unsorted_features = [x.tolist()[1:len(x)-1] for x in numerical_unsorted]
 
     train_features = []
     test_features = []
 
     print('Organising training set...')
     for track_id, labels in tqdm.tqdm(train_labels):
-        train_features.append(features_unsorted[features_unsorted_ids.index('{:06d}'.format(int(track_id)))])
+        if '{:06d}'.format(int(track_id)) in unsorted_ids:
+            train_features.append(unsorted_features[unsorted_ids.index('{:06d}'.format(int(track_id)))])
 
     print('Organising testing set...')
     for track_id, labels in tqdm.tqdm(test_labels):
-        test_features.append(features_unsorted[features_unsorted_ids.index('{:06d}'.format(int(track_id)))])
+        if '{:06d}'.format(int(track_id)) in unsorted_ids:
+            test_features.append(unsorted_features[unsorted_ids.index('{:06d}'.format(int(track_id)))])
 
     # Save the data
     print('Saving data to pickles...')
