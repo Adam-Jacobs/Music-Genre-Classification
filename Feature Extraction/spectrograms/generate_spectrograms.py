@@ -12,7 +12,7 @@ import gc
 import os
 import sys
 sys.path.append("..\\common")
-import utils
+import file_utils as utils
 
 
 spectrograms_directory = "..\\..\\..\\..\\..\\..\\FYP_Data\\spectrogram_images"
