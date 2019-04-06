@@ -52,6 +52,19 @@ class ModelAttributes:
         return header
 
 
+    '''Returns a float'''
+    @staticmethod
+    def get_available_ram():
+        nvmlInit()
+        for i in range(nvmlDeviceGetCount()):
+            handle = nvmlDeviceGetHandleByIndex(i)
+            meminfo = nvmlDeviceGetMemoryInfo(handle)
+            print("%s: %0.1f MB free" % (nvmlDeviceGetName(handle), meminfo.free / (1024. ** 2)))
+        nvmlShutdown()
+
+        return ram
+
+
 
 # Parameters
 # optimizer_name

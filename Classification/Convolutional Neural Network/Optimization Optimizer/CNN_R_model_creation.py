@@ -111,14 +111,14 @@ def get_num_layers():
 
 def get_num_neurons():
     neuron_min = 1
-    neuron_max = 400  # Because Memory
+    neuron_max = 600  # Because Memory
 
     return random.randint(neuron_min, neuron_max)
 
 
 def get_conv_shape():
     conv_shape_min = 2  # TODO - make this random based on the shape of the previous output layer?
-    conv_shape_max = 5  # max theoretically just the size of the image(per dimension)?-no max is previous output shape
+    conv_shape_max = 200  # max theoretically just the size of the image(per dimension)? - 2nd+ max is prev output shape
 
     size = random.randint(conv_shape_min, conv_shape_max)
     shape = (size, size)
@@ -145,6 +145,10 @@ def get_dense_layer():
     return Dense(num_neurons), num_neurons, 0
 
 
+def get_dropout_layer():
+    return Dropout(random.uniform(0.0, 1.0)), 0, 0
+
+
 def get_layer(is_input, input_shape):
     if is_input:
         layer_type = 'Conv2D'
@@ -156,6 +160,8 @@ def get_layer(is_input, input_shape):
         elif layer_type == 'MaxPooling2D':
             layer, num_neurons, conv_size = get_maxpooling2d_layer()
         elif layer_type == 'Dense':
+            layer, num_neurons, conv_size = get_dense_layer()
+        elif layer_type == 'Dropout':
             layer, num_neurons, conv_size = get_dense_layer()
 
     activation, activation_name = get_activation_layer()

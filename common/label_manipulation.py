@@ -29,9 +29,17 @@ def get_genre_top_level(id):
     return -1
 
 
-# Forces genre labels into values 0 - 15
-def categorise_genre(genre):
+'''Forces genre labels into values 0 - 15'''
+def categorise_genre(genre_id):
     if len(genre_top_levels) == 0:
         load_genres()
 
-    return top_level_genres.index(genre)
+    return top_level_genres.index(genre_id)
+
+
+'''Gets the original genre id from categorised index'''
+def uncategorise_genre(categorised_genre_id):
+    if len(genre_top_levels) == 0:
+        load_genres()
+
+    return top_level_genres[categorised_genre_id]

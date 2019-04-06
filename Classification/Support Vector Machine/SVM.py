@@ -5,7 +5,7 @@ import pickle
 
 def load_data():
     print('Loading training & test data...')
-    pickle_in = open("feature_pickles\\train_features.pickle", "rb")
+    pickle_in = open("feature_pickles\\train.pickle", "rb")
     train_features = pickle.load(pickle_in)
 
     pickle_in = open("..\\..\\dataset labels\\pickles\\training_labels.pickle", "rb")
@@ -14,7 +14,7 @@ def load_data():
     pickle_in = open("..\\..\\dataset labels\\pickles\\validation_labels.pickle", "rb")
     train_labels.extend(pickle.load(pickle_in))
 
-    pickle_in = open("feature_pickles\\test_features.pickle", "rb")
+    pickle_in = open("feature_pickles\\test.pickle", "rb")
     test_features = pickle.load(pickle_in)
 
     pickle_in = open("..\\..\\dataset labels\\pickles\\testing_labels.pickle", "rb")

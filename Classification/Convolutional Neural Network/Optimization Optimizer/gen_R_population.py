@@ -3,7 +3,7 @@ import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten
 from tensorflow.keras.layers import Conv2D, MaxPooling2D
-from keras.utils import to_categorical
+from sklearn.preprocessing import MultiLabelBinarizer
 # import model_state_IO as modelIO
 import os
 import pickle
@@ -19,7 +19,7 @@ os.system('mode con: cols=220 lines=40')
 # model_name = input('Please input the name of this model: ')
 
 print('Loading training & test data...')
-pickle_in = open("..\\feature_pickles\\training_features.pickle", "rb")
+pickle_in = open("..\\feature_pickles\\\downscaled3\\training_features.pickle", "rb")
 train_features = pickle.load(pickle_in)
 
 pickle_in = open("..\\..\\..\\dataset labels\\pickles\\training_labels.pickle", "rb")
@@ -28,7 +28,7 @@ train_labels = pickle.load(pickle_in)
 pickle_in = open("..\\..\\..\\dataset labels\\pickles\\validation_labels.pickle", "rb")
 train_labels.extend(pickle.load(pickle_in))
 
-pickle_in = open("..\\feature_pickles\\test_features.pickle", "rb")
+pickle_in = open("..\\feature_pickles\\\downscaled3\\test_features.pickle", "rb")
 test_features = pickle.load(pickle_in)
 
 pickle_in = open("..\\..\\..\\dataset labels\\pickles\\testing_labels.pickle", "rb")
@@ -53,22 +53,23 @@ for _ in range(1000):
 
     # Output layer
     model.add(Dense(16))
-    model.add(Activation('softmax'))
+    model.add(Activation('sigmoid'))
 
     model.compile(loss='categorical_crossentropy',
                   optimizer=Create.get_optimizer(),
                   metrics=['categorical_accuracy'])
 
     print('Training CNN...')
+    mlb = MultiLabelBinarizer()
 
     start_train_time = time.time()
-    model.fit(train_features, to_categorical(np.array([x[1] for x in train_labels])),
+    model.fit(train_features, mlb.fit_transform(np.array([x[1] for x in train_labels])),
               batch_size=Create.get_batch_size(), epochs=Create.get_num_epochs(),
               validation_split=Create.get_validation_split_num())
     end_train_time = time.time()
 
     print('Evaluating CNN performance...')
-    scores = model.evaluate(test_features, to_categorical(np.array([x[1] for x in test_labels])))
+    scores = model.evaluate(test_features, mlb.fit_transform(np.array([x[1] for x in test_labels])))
 
     Create.model_attributes.loss = scores[0]
     Create.model_attributes.accuracy = scores[1]

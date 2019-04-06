@@ -16,8 +16,8 @@ image_endY = 341
 image_sizeX = image_endX - image_startX
 image_sizeY = image_endY - image_startY
 image_size = image_sizeX * image_sizeY
-image_scaled_sizeX = int(image_sizeX / 3)
-image_scaled_sizeY = int(image_sizeY / 3)
+image_scaled_sizeX = int(image_sizeX / 2)
+image_scaled_sizeY = int(image_sizeY / 2)
 spectrograms_features_path = "feature_pickles\\spectrogram_features_unsorted.pickle"
 
 
@@ -112,10 +112,12 @@ if __name__ == "__main__":
 
     # Save the data
     print('Saving data to pickles...')
-    pickle_out = open("feature_pickles\\training_features.pickle", "wb")
+    # pickle_out = open("feature_pickles\\training_features.pickle", "wb")  # scaled / 3
+    pickle_out = open("feature_pickles\\downscaled2\\training_features.pickle", "wb")
     pickle.dump(training_features, pickle_out)
     pickle_out.close()
 
-    pickle_out = open("feature_pickles\\test_features.pickle", "wb")
+    # pickle_out = open("feature_pickles\\test_features.pickle", "wb")  # scaled / 3
+    pickle_out = open("feature_pickles\\downscaled2\\test_features.pickle", "wb")
     pickle.dump(test_features, pickle_out)
     pickle_out.close()

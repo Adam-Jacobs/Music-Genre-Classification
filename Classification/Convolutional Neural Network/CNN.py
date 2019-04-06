@@ -1,25 +1,26 @@
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.datasets import cifar10
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten
 from tensorflow.keras.layers import Conv2D, MaxPooling2D
+from tensorflow.keras import optimizers
 from sklearn.preprocessing import MultiLabelBinarizer
 import model_state_IO as modelIO
 import pickle
 import os
+import gc
 import sys
 sys.path.append("..\\..\\common")
 import label_manipulation as lm
 
 
-os.system('mode con: cols=180 lines=40')
-model_name = input('Please input the name of this model: ')
+# os.system('mode con: cols=180 lines=40')
+# model_name = input('Please input the name of this model: ')
 
 
 print('Loading training & test data...')
-pickle_in = open("feature_pickles\\training_features.pickle", "rb")
+pickle_in = open("feature_pickles\\downscaled3\\training_features.pickle", "rb")
 train_features = pickle.load(pickle_in)
 
 pickle_in = open("..\\..\\dataset labels\\pickles\\training_labels.pickle", "rb")
@@ -28,7 +29,7 @@ train_labels = pickle.load(pickle_in)
 pickle_in = open("..\\..\\dataset labels\\pickles\\validation_labels.pickle", "rb")
 train_labels.extend(pickle.load(pickle_in))
 
-pickle_in = open("feature_pickles\\test_features.pickle", "rb")
+pickle_in = open("feature_pickles\\downscaled3\\test_features.pickle", "rb")
 test_features = pickle.load(pickle_in)
 
 pickle_in = open("..\\..\\dataset labels\\pickles\\testing_labels.pickle", "rb")
@@ -85,34 +86,37 @@ def data_to_int(data):
 
     return data
 
+
 # cut_all_but_3_genres()
-
-
-prediction_features = test_features[2001: 2010]
-prediction_labels = test_labels[2001: 2010]
+# normalise_data()
 
 train_features = train_features[:2000]
 train_labels = train_labels[:2000]
 test_features = test_features[:2000]
 test_labels = test_labels[:2000]
 
-# normalise_data()
+pred_point = len(test_features) - 8
+
+prediction_features = test_features[pred_point:]
+prediction_labels = test_labels[pred_point:]
+
+test_features = test_features[:pred_point]
+test_labels = test_labels[:pred_point]
 
 print('Creating CNN model...')
 model = Sequential()
 
 # Input layer
-model.add(Conv2D(256, (3, 3), input_shape=train_features.shape[1:]))
-model.add(Activation('relu'))
+model.add(Conv2D(757, (3, 3), activation='relu', input_shape=train_features.shape[1:]))
 model.add(MaxPooling2D(pool_size=(2, 2)))
-
-# Hidden Layer
-model.add(Conv2D(256, (3, 3)))
-model.add(Activation('relu'))
+model.add(Conv2D(757, (3, 3), activation='relu'))
+#model.add(Conv2D(256, (20, 20), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 
 model.add(Flatten())  # converts 3D feature maps to 1D vectors
 
+# model.add(Dropout(rate=0.2))
+# model.add(Dense(64))
 model.add(Dense(64))
 
 # Output layer
@@ -120,7 +124,7 @@ model.add(Dense(16))
 model.add(Activation('sigmoid'))
 
 model.compile(loss='categorical_crossentropy',
-              optimizer='adam',
+              optimizer='Adam',
               metrics=['categorical_accuracy'])
 
 print('Training CNN...')
@@ -133,19 +137,32 @@ print('Evaluating CNN performance...')
 scores = model.evaluate(test_features, mlb.fit_transform(np.array([x[1] for x in test_labels])))
 print("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
 
-predictions = model.predict(np.array(prediction_features))
+prediction_features1 = prediction_features[:4]
+prediction_labels1 = prediction_labels[:4]
+prediction_features2 = prediction_features[4:]
+prediction_labels2 = prediction_labels[4:]
 
-predictions = data_to_int(predictions)
+predictions1 = model.predict(np.array(prediction_features1))
+predictions2 = model.predict(np.array(prediction_features2))
+
+predictions1 = data_to_int(predictions1)
+predictions2 = data_to_int(predictions2)
 
 print('Predictions: ')
-print(predictions)
+print(predictions1)
+print(predictions2)
 
-categorised_prediction_labels = mlb.fit_transform(np.array([x[1] for x in prediction_labels]))
-labels_to_output = []
-for i, l in enumerate(prediction_labels):
-    labels_to_output.append([l[0], categorised_prediction_labels[i]])
+# prediction_labels.append(['', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]])
+categorised_prediction_labels1 = mlb.fit_transform(np.array([x[1] for x in prediction_labels1]))
+categorised_prediction_labels2 = mlb.fit_transform(np.array([x[1] for x in prediction_labels2]))
+
+# track_id + one-hot labels
+# labels_to_output = []
+# for i, l in enumerate(prediction_labels):
+#     labels_to_output.append([l[0], categorised_prediction_labels[i]])
 
 print('Correct labels:')
-print(categorised_prediction_labels)
+print(categorised_prediction_labels1)
+print(categorised_prediction_labels2)
 
 # modelIO.save_model(model, model_name)
