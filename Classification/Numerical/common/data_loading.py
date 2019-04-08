@@ -5,10 +5,10 @@ import sys
 
 def load_numerical_data():
     print('Loading training & test data...')
-    pickle_in = open("..\\feature_pickles\\train.pickle", "rb")
+    pickle_in = open("..\\data\\train.pickle", "rb")
     train = np.array(pickle.load(pickle_in))
 
-    pickle_in = open("..\\feature_pickles\\test.pickle", "rb")
+    pickle_in = open("..\\data\\test.pickle", "rb")
     test = np.array(pickle.load(pickle_in))
 
     train_labels = [x.split(';') for x in train[:, 23]]

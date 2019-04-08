@@ -4,9 +4,44 @@ import numpy as np
 import sys
 sys.path.append("..\\common")
 import data_loading
+sys.path.append("..\\..\\..\\common")
+import label_manipulation as lm
 
+
+def clear_genres_list(genres, accepted):
+    new_genres = []
+    for genre in genres:
+        if genre in accepted:
+            new_genres.append(genre)
+
+    return new_genres
+
+
+def cut_genres_from_list(features, labels):
+    new_features = []
+    new_labels = []
+    accepted_genres = [str(lm.categorise_genre(12)), str(lm.categorise_genre(15)), str(lm.categorise_genre(38))]
+
+    for i in range(0, len(labels)):
+        if str(lm.categorise_genre(12)) in labels[i] or str(lm.categorise_genre(15)) in labels[i] or str(lm.categorise_genre(38)) in labels[i]:
+            new_features.append(features[i])
+            new_labels.append(clear_genres_list(labels[i], accepted_genres))
+
+    return np.array(new_features), np.array(new_labels)
+
+
+# Test accuracy with only best populated genres -> Experimental (38k), Electronic (34k), Rock (33k)
+def cut_all_but_3_genres(train_features, train_labels, test_features, test_labels):
+    train_features, train_labels = cut_genres_from_list(train_features, train_labels)
+    test_features, test_labels = cut_genres_from_list(test_features, test_labels)
+
+    return train_features, train_labels, test_features, test_labels
 
 train_features, train_labels, test_features, test_labels = data_loading.load_numerical_data()
+
+train_features, train_labels, test_features, test_labels = cut_all_but_3_genres(train_features, train_labels, test_features, test_labels)
+
+# TODO add data normalisation
 
 mlb = MultiLabelBinarizer()
 train_labels = mlb.fit_transform(np.array(train_labels))
