@@ -11,7 +11,6 @@ genre_names = []
 pickle_in = open("..\\dataset labels\\pickles\\genre_names.pickle", "rb")
 genre_names.extend(pickle.load(pickle_in))
 
-# dict = {'Name': 'Zara', 'Age': 7, 'Class': 'First'}
 top_level_colours = {'Rock': 'red',
                      'International': 'yellow',
                      'Blues': 'orange',
@@ -131,19 +130,6 @@ def populate_track_features(features, original_tracks):
     return new_tracks
 
 
-'''Takes an array of floats
-Returns a normalised list of floats'''
-def min_max_normalise(features):
-    new_features = []
-    # x – min) / (max – min)
-
-    # min = min(features)
-    # max = max(features)
-
-
-    return new_features
-
-
 def create_tsne_plot(perplexity, num_tracks, feature_type, image_name):
     print('Setting up data...')
 
@@ -159,18 +145,11 @@ def create_tsne_plot(perplexity, num_tracks, feature_type, image_name):
     else:
         track_features_and_ids = np.loadtxt("..\\Feature Extraction\\numerical features\\data\\features.csv",
                                             dtype=None, delimiter=',')
-
-        '''track_ids = [x[0] for x in track_features_and_ids]
-
+        track_ids = [x[0] for x in track_features_and_ids]
         track_features = [x[1:23] for x in track_features_and_ids]
 
-        to_norm_features = np.array(track_features)[:, 0]
 
-        print(len(to_norm_features))
-        sys.exit()'''
-
-
-
+    # todo normalise - but normalise only after getting the plottable tracks
     tracks = get_plottable_tracks()[:num_tracks]
 
     print('populating track features...')
