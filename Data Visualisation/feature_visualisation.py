@@ -6,6 +6,7 @@ import tqdm
 import sys
 sys.path.append("..\\common")
 import label_manipulation as lm
+import data_manipulation as dm
 
 genre_names = []
 pickle_in = open("..\\dataset labels\\pickles\\genre_names.pickle", "rb")
@@ -114,11 +115,11 @@ def copy(old_track):
     return new_track
 
 
-def populate_track_features(features, original_tracks):
+def populate_track_features(ids, features, original_tracks):
     new_tracks = []
 
     print('creating id list...')
-    feature_ids = [int(x[0]) for x in features]
+    feature_ids = [int(x) for x in ids]
 
     print('looping through tracks')
     for track in tqdm.tqdm(original_tracks):
@@ -130,7 +131,7 @@ def populate_track_features(features, original_tracks):
     return new_tracks
 
 
-def create_tsne_plot(perplexity, num_tracks, feature_type, image_name):
+def create_tsne_plot(perplexity, num_tracks, feature_type, image_name, normalise=False):
     print('Setting up data...')
 
     if feature_type == 'SF':
@@ -147,7 +148,10 @@ def create_tsne_plot(perplexity, num_tracks, feature_type, image_name):
                                             dtype=None, delimiter=',')
         track_ids = [x[0] for x in track_features_and_ids]
         track_features = [x[1:23] for x in track_features_and_ids]
-        
+
+    # Normalise features if requested
+    if normalise:
+        track_features = dm.normalise_features(track_features)
 
 
     # todo normalise - but normalise only after getting the plottable tracks
@@ -155,7 +159,7 @@ def create_tsne_plot(perplexity, num_tracks, feature_type, image_name):
 
     print('populating track features...')
     # Populate track objects with features
-    tracks = populate_track_features(track_features, tracks)
+    tracks = populate_track_features(track_ids, track_features, tracks)
 
     # Remove any duplicate labels for the legend to be accurate
     get_labels_with_ignored_duplicates(tracks)
@@ -166,5 +170,14 @@ def create_tsne_plot(perplexity, num_tracks, feature_type, image_name):
     for i in range(0, len(tracks) - 1):
         ax.scatter(ax_vals[:, 0][i], ax_vals[:, 1][i], 20, c=tracks[i].colour, label=tracks[i].genre_name)
 
+    # Place legend aesthetically
     ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), fancybox=True, shadow=True, ncol=4, fontsize=10)
-    plt.savefig('plots_' + feature_type + '\\' + image_name + '.png', bbox_inches="tight")
+
+    # Construct directoy path to save image to
+    dir_path = "plots_" + feature_type + '\\' + "single-label\\"
+    if not normalise:
+        dir_path += "not "
+    dir_path += "normalised\\"
+
+    # Save image
+    plt.savefig(dir_path + image_name + '.png', bbox_inches="tight")
