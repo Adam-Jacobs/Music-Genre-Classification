@@ -37,13 +37,13 @@ def cut_all_but_3_genres(train_features, train_labels, test_features, test_label
 
     return train_features, train_labels, test_features, test_labels
 
-train_features, train_labels, test_features, test_labels = data_loading.load_numerical_data()
+train_features, train_labels, test_features, test_labels = data_loading.load_numerical_data(normalise=False)
 
 train_features, train_labels, test_features, test_labels = cut_all_but_3_genres(train_features, train_labels, test_features, test_labels)
 
-# TODO add data normalisation
-
 mlb = MultiLabelBinarizer()
+train_labels = np.array(train_labels)
+np.random.shuffle(train_labels)
 train_labels = mlb.fit_transform(np.array(train_labels))
 test_labels = mlb.fit_transform(np.array(test_labels))
 

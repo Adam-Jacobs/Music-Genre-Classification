@@ -147,6 +147,7 @@ def create_tsne_plot(perplexity, num_tracks, feature_type, image_name):
                                             dtype=None, delimiter=',')
         track_ids = [x[0] for x in track_features_and_ids]
         track_features = [x[1:23] for x in track_features_and_ids]
+        
 
 
     # todo normalise - but normalise only after getting the plottable tracks

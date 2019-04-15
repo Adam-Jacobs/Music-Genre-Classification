@@ -1,9 +1,10 @@
 import numpy as np
 import pickle
 import sys
+sys.path.append("..\\..\\..\\common")
+import data_manipulation as dm
 
-
-def load_numerical_data():
+def load_numerical_data(normalise=False):
     print('Loading training & test data...')
     pickle_in = open("..\\data\\train.pickle", "rb")
     train = np.array(pickle.load(pickle_in))
@@ -27,5 +28,9 @@ def load_numerical_data():
 
     train_features = [[float(s) for s in x] for x in train[:, range(1, 23)]]
     test_features = [[float(s) for s in x] for x in test[:, range(1, 23)]]
+
+    if normalise:
+        train_features = dm.normalise_features(train_features)
+        test_features = dm.normalise_features(test_features)
 
     return train_features, train_labels, test_features, test_labels
