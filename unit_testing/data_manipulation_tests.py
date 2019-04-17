@@ -1,5 +1,7 @@
+from __future__ import absolute_import
+
 import unittest
-import data_manipulation as dm
+from common.data_manipulation import DataManipulation
 import numpy as np
 
 
@@ -25,7 +27,7 @@ class TestDataManipulation(unittest.TestCase):
         correct_normalised_values = [0.0, 0.6818181818181818, 1.0]
 
         # Execute
-        normalised_values = dm.min_max_normalise(features)
+        normalised_values = DataManipulation.min_max_normalise(features)
 
         # Test
         self.assertEqual(normalised_values, correct_normalised_values)
@@ -40,7 +42,7 @@ class TestDataManipulation(unittest.TestCase):
                                      [1.0, 1.0]]
 
         # Execute
-        normalised_values = dm.normalise_features(features)
+        normalised_values = DataManipulation.normalise_features(features)
 
         # Test
         self.assertEqual(normalised_values, correct_normalised_values)
