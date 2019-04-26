@@ -1,8 +1,5 @@
-from __future__ import absolute_import
-
 import unittest
 from common.data_manipulation import DataManipulation
-import numpy as np
 
 
 class TestDataManipulation(unittest.TestCase):
