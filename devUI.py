@@ -95,7 +95,7 @@ class UI:
         self.__current_features_file_label = label
 
         # Select Save Directory
-        button = Button(page, text='Create Plots', command=self.select_save_directory)
+        button = Button(page, text='Select Save Directory', command=self.select_save_directory)
         button.grid(row=4, column=0)
 
         label = Label(page, text='no directory selected...')
@@ -151,7 +151,12 @@ class UI:
 
     '''Main logic for creating the data visualisations'''
     def create_plots(self):
-        pass
+        data_visualisation_facade.create_data_visualisation(int(self.__DVAttributes.perplexity_limit.get()),
+                                                            int(self.__DVAttributes.step_increment.get()),
+                                                            int(self.__DVAttributes.num_tracks.get()),
+                                                            self.__DVAttributes.features_file_path, "test",
+                                                            self.__DVAttributes.normalise.get(),
+                                                            self.__DVAttributes.save_dir_path)
 
 
 window = Tk()

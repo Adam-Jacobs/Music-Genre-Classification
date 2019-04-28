@@ -6,10 +6,10 @@ import sys
 from data_visualisation import tsne
 from common.label_manipulation import LabelManipulator
 from common.data_manipulation import DataManipulation as dm
+import data_loader
 
-genre_names = []
-pickle_in = open("dataset labels\\pickles\\genre_names.pickle", "rb")
-genre_names.extend(pickle.load(pickle_in))
+genre_names = data_loader.get_genre_names()
+
 
 top_level_colours = {'Rock': 'red',
                      'International': 'yellow',
@@ -66,20 +66,10 @@ def get_labels_with_ignored_duplicates(tracks):  # For the plot legend
 
 
 def get_plottable_tracks():
-    pickle_in = open("..\\dataset labels\pickles\\training_labels.pickle", "rb")
-    training_labels = pickle.load(pickle_in)
-
-    pickle_in = open("..\\dataset labels\pickles\\validation_labels.pickle", "rb")
-    validation_labels = pickle.load(pickle_in)
-
-    pickle_in = open("..\\dataset labels\pickles\\testing_labels.pickle", "rb")
-    test_labels = pickle.load(pickle_in)
-
-    # Combine into one list for data visualisation
     track_labels = []
-    track_labels.extend(training_labels)
-    track_labels.extend(validation_labels)
-    track_labels.extend(test_labels)
+    track_labels.extend(data_loader.get_training_labels())
+    track_labels.extend(data_loader.get_validation_labels())
+    track_labels.extend(data_loader.get_test_labels())
     # i.e - [track_id, track_genres[]]
 
     # Filter any tracks out that have more than one top-level genre
@@ -132,30 +122,18 @@ def populate_track_features(ids, features, original_tracks):
     return new_tracks
 
 
-def create_tsne_plot(perplexity, num_tracks, feature_type, image_name, normalise=False, save_path=None):
+'''Saves a scatterplot .png image to save path specified'''
+def create_tsne_plot(perplexity, num_tracks, features_file_path, image_name, normalise=False, save_path=None):
     print('Setting up data...')
 
-    if feature_type == 'SF':
-        pickle_in = open("..\\Classification\\Convolutional Neural Network\\feature_pickles\\spectrogram_features_unsorted.pickle", "rb")
-        ids_and_features = pickle.load(pickle_in)
-
-        # todo - rewrite this part for new data structure [:num_tracks]
-        track_ids = [int(x[0]) for x in ids_and_features[:num_tracks]]
-        track_features = [x[1] for x in ids_and_features[:num_tracks]]
-        # Flatten to 1d array
-        track_features = np.array(track_features).reshape(num_tracks, -1)
-    else:
-        track_features_and_ids = np.loadtxt("..\\Feature Extraction\\numerical features\\data\\features.csv",
-                                            dtype=None, delimiter=',')
-        track_ids = [x[0] for x in track_features_and_ids]
-        track_features = [x[1:23] for x in track_features_and_ids]
+    track_features_and_ids = np.loadtxt(features_file_path, dtype=None, delimiter=',')
+    track_ids = [x[0] for x in track_features_and_ids]
+    track_features = [x[1:len(x)] for x in track_features_and_ids]
 
     # Normalise features if requested
     if normalise:
         track_features = dm.normalise_features(track_features)
 
-
-    # todo normalise - but normalise only after getting the plottable tracks
     tracks = get_plottable_tracks()[:num_tracks]
 
     print('populating track features...')
@@ -184,4 +162,4 @@ def create_tsne_plot(perplexity, num_tracks, feature_type, image_name, normalise
         dir_path = save_path
 
     # Save image
-    plt.savefig(dir_path + image_name + '.png', bbox_inches="tight")
+    plt.savefig(dir_path + '\\' + image_name + '.png', bbox_inches="tight")
