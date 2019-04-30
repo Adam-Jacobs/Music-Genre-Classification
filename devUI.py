@@ -4,6 +4,7 @@ from tkinter import filedialog
 import os
 from data_visualisation import data_visualisation_facade
 from data_visualisation.attribute_holder import DVAttributes
+from classification import classification_facade
 
 
 class UI:
@@ -19,13 +20,16 @@ class UI:
         # self.status_bar.pack(side=BOTTOM, fill=X)
 
         # Classification variables
-        self.__current_model_label = None
-        self.__current_model_name = None
+        self.__CLclassifier_combobox = None
+        self.__CLcurrent_features_file_path = None
+        self.__CLcurrent_features_file_label = None
+        self.__CLcurrent_save_dir_path = None
+        self.__CLcurrent_save_dir_label = None
 
         # Data Visualisation Variables
         self.__DVAttributes = DVAttributes()
-        self.__current_features_file_label = None
-        self.__current_save_dir_path_label = None
+        self.__DVcurrent_features_file_label = None
+        self.__DVcurrent_save_dir_path_label = None
 
         page_feature_extraction, page_data_visualisation, page_classification = self.populate_notebook(window_width, window_height)
 
@@ -87,20 +91,20 @@ class UI:
         entry.grid(row=2, column=1)
 
         # Select Features File
-        button = Button(page, text='Select Features File', command=self.select_features_file)
-        button.grid(row=3, column=0)
-
         label = Label(page, text='no file selected...')
         label.grid(row=3, column=1)
-        self.__current_features_file_label = label
+        self.__DVcurrent_features_file_label = label
+
+        button = Button(page, text='Select Features File', command=lambda: self.select_features_file('dv'))
+        button.grid(row=3, column=0)
 
         # Select Save Directory
-        button = Button(page, text='Select Save Directory', command=self.select_save_directory)
-        button.grid(row=4, column=0)
-
         label = Label(page, text='no directory selected...')
         label.grid(row=4, column=1)
-        self.__current_save_dir_path_label = label
+        self.__DVcurrent_save_dir_path_label = label
+
+        button = Button(page, text='Select Save Directory', command=lambda: self.select_save_directory('dv'))
+        button.grid(row=4, column=0)
 
         # Normalise
         checkbutton = Checkbutton(page, text="Normalise Features", variable=self.__DVAttributes.normalise)
@@ -112,21 +116,38 @@ class UI:
 
     '''Adds the elements that make up the Classification page to the window'''
     def populate_classification_page(self, page):
-
-        # Current Model Label
-        label = Label(page, text='No model loaded')
-        if self.__current_model_name is not None:
-            label.config(text=self.__current_model_name)
+        # Classifier Choice
+        label = Label(page, text='Classifier: ')
         label.grid(row=0, column=0)
-        self.__current_model_label = label
 
-        # Load Model Button
-        button = Button(page, text='Load Model')
-        button.grid(row=0, column=1)
+        combobox = Combobox(page, state="readonly", values=["Random Forest", "Convolutional Neural Network"])
+        combobox.grid(row=0, column=1)
+        combobox.current(0)
+        self.__CLclassifier_combobox = combobox
 
-        # Train New Model Button
-        button = Button(page, text='Train New Model')
-        button.grid(row=0, column=2)
+        # Section - Training
+        label = Label(page, text='Training: ')
+        label.grid(row=1, column=0)
+
+        # Select Features File
+        label = Label(page, text='no file selected...')
+        label.grid(row=3, column=1)
+        self.__CLcurrent_features_file_label = label
+
+        button = Button(page, text='Select Features File', command=lambda: self.select_features_file('cl'))
+        button.grid(row=3, column=0)
+
+        # Select Save Directory
+        label = Label(page, text='no directory selected...')
+        label.grid(row=4, column=1)
+        self.__CLcurrent_save_dir_label = label
+
+        button = Button(page, text='Select Save Directory', command=lambda: self.select_save_directory('cl'))
+        button.grid(row=4, column=0)
+
+        # Train Classifier Button
+        button = Button(page, text='Train Classifier', command=self.train_classifier)
+        button.grid(row=5, column=0)
 
     '''Displays status in bottom of window'''
     def add_status(self, message):
@@ -137,19 +158,32 @@ class UI:
     def clear_status(self):
         self.status_bar.pack_forget()
 
-    def select_features_file(self):
+    def select_features_file(self, page_origin):
         file_path = filedialog.askopenfilename(title='Select Features File',
                                                filetypes=[('csv files', '*.csv'), ('pickle files', '*.pickle')])
 
-        self.__DVAttributes.features_file_path = file_path
-        self.__current_features_file_label.config(text=os.path.split(file_path)[1])
+        file_name = os.path.split(file_path)[1]
 
-    def select_save_directory(self):
+        if page_origin == 'dv':
+            self.__DVAttributes.features_file_path = file_path
+            self.__DVcurrent_features_file_label.config(text=file_name)
+        elif page_origin == 'cl':
+            self.__CLcurrent_features_file_path = file_path
+            self.__CLcurrent_features_file_label.config(text=file_name)
+
+    def select_save_directory(self, page_origin):
         dir_path = filedialog.askdirectory(title='Select Save Directory')
-        self.__DVAttributes.save_dir_path = dir_path
-        self.__current_save_dir_path_label.config(text=os.path.split(dir_path)[1])
 
-    '''Main logic for creating the data visualisations'''
+        dir_name = os.path.split(dir_path)[1]
+
+        if page_origin == 'dv':
+            self.__DVAttributes.save_dir_path = dir_path
+            self.__DVcurrent_save_dir_path_label.config(text=dir_name)
+        elif page_origin == 'cl':
+            self.__CLcurrent_save_dir_path = dir_path
+            self.__CLcurrent_save_dir_label.config(text=dir_name)
+
+    '''Logic for creating t-SNE graphs in for data visualisation page'''
     def create_plots(self):
         data_visualisation_facade.create_data_visualisation(int(self.__DVAttributes.perplexity_limit.get()),
                                                             int(self.__DVAttributes.step_increment.get()),
@@ -157,6 +191,10 @@ class UI:
                                                             self.__DVAttributes.features_file_path, "test",
                                                             self.__DVAttributes.normalise.get(),
                                                             self.__DVAttributes.save_dir_path)
+
+    '''Logic for training a classifier for classification page'''
+    def train_classifier(self):
+        classification_facade.train(self.__CLclassifier_combobox.get(), self.__CLcurrent_features_file_path, self.__CLcurrent_save_dir_path)
 
 
 window = Tk()
