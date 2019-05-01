@@ -5,6 +5,7 @@ import os
 from data_visualisation import data_visualisation_facade
 from data_visualisation.attribute_holder import DVAttributes
 from classification import classification_facade
+from common import file_utils
 
 
 class UI:
@@ -18,6 +19,13 @@ class UI:
         self.window = window
         # self.status_bar = Label(self.window, text='hello there', relief=SUNKEN, anchor=W)
         # self.status_bar.pack(side=BOTTOM, fill=X)
+
+        # Feature Extraction Variables
+        self.__FEfeatures_combobox = None
+        self.__FEpaths_to_extract = None
+        self.__FEnum_files_to_extract_label = None
+        self.__FEcurrent_save_dir_path = None
+        self.__FEcurrent_save_dir_label = None
 
         # Classification variables
         self.__CLclassifier_combobox = None
@@ -65,7 +73,39 @@ class UI:
 
     '''Adds the elements that make up the Feature Extraction page to the window'''
     def populate_feature_extraction_page(self, page):
-        pass
+        # Feature Choice
+        label = Label(page, text='Feature Type: ')
+        label.grid(row=0, column=0)
+
+        combobox = Combobox(page, state="readonly", values=["Numerical", "Spectrogram"])
+        combobox.grid(row=0, column=1)
+        combobox.current(0)
+        self.__FEfeatures_combobox = combobox
+
+        # Select Music Files to Extract
+        label = Label(page, text='Files to Extract: ')
+        label.grid(row=2, column=0)
+
+        label = Label(page, text='no file(s) selected...')
+        label.grid(row=2, column=1)
+        self.__FEnum_files_to_extract_label = label
+
+        button = Button(page, text='Select Music File', command=self.select_music_file)
+        button.grid(row=3, column=0)
+
+        button = Button(page, text='Select Directory', command=self.select_music_directory)
+        button.grid(row=3, column=1)
+
+        # Select Save Directory
+        label = Label(page, text='no directory selected...')
+        label.grid(row=4, column=1)
+        self.__FEcurrent_save_dir_label = label
+
+        button = Button(page, text='Select Save Directory', command=lambda: self.select_save_directory('fe'))
+        button.grid(row=4, column=0)
+
+        button = Button(page, text='Extract Features', command=self.extract_features)
+        button.grid(row=5, column=0)
 
     '''Adds the elements that make up the Data Visualisation page to the window'''
     def populate_data_visualisation_page(self, page):
@@ -106,7 +146,7 @@ class UI:
         button = Button(page, text='Select Save Directory', command=lambda: self.select_save_directory('dv'))
         button.grid(row=4, column=0)
 
-        # Normalise
+        # Normalise Checkbox
         checkbutton = Checkbutton(page, text="Normalise Features", variable=self.__DVAttributes.normalise)
         checkbutton.grid(row=5, column=0)
 
@@ -171,19 +211,39 @@ class UI:
             self.__CLcurrent_features_file_path = file_path
             self.__CLcurrent_features_file_label.config(text=file_name)
 
+    def select_music_file(self):
+        file_path = filedialog.askopenfilename(title='Select Music File', filetypes=[('mp3 files', '*.mp3')])
+
+        file_name = os.path.split(file_path)[1]
+        self.__FEpaths_to_extract = [file_path]
+        self.__FEnum_files_to_extract_label.config(text=file_name)
+
+    def select_music_directory(self):
+        dir_path = filedialog.askdirectory(title='Select Directory Containing Music Files')
+
+        self.__FEpaths_to_extract = file_utils.get_files(dir_path, extension='.mp3')
+        self.__FEnum_files_to_extract_label.config(text=str(len(self.__FEpaths_to_extract)))
+
     def select_save_directory(self, page_origin):
         dir_path = filedialog.askdirectory(title='Select Save Directory')
 
         dir_name = os.path.split(dir_path)[1]
 
-        if page_origin == 'dv':
+        if page_origin == 'fe':
+            self.__FEcurrent_save_dir_path = dir_path
+            self.__FEcurrent_save_dir_label.config(text=dir_name)
+        elif page_origin == 'dv':
             self.__DVAttributes.save_dir_path = dir_path
             self.__DVcurrent_save_dir_path_label.config(text=dir_name)
         elif page_origin == 'cl':
             self.__CLcurrent_save_dir_path = dir_path
             self.__CLcurrent_save_dir_label.config(text=dir_name)
 
-    '''Logic for creating t-SNE graphs in for data visualisation page'''
+    '''Logic for extracting features from selected music files in Feature Extraction page'''
+    def extract_features(self):
+        pass
+
+    '''Logic for creating t-SNE graphs in for Data Visualisation page'''
     def create_plots(self):
         data_visualisation_facade.create_data_visualisation(int(self.__DVAttributes.perplexity_limit.get()),
                                                             int(self.__DVAttributes.step_increment.get()),
@@ -192,7 +252,7 @@ class UI:
                                                             self.__DVAttributes.normalise.get(),
                                                             self.__DVAttributes.save_dir_path)
 
-    '''Logic for training a classifier for classification page'''
+    '''Logic for training a classifier for Classification page'''
     def train_classifier(self):
         classification_facade.train(self.__CLclassifier_combobox.get(), self.__CLcurrent_features_file_path, self.__CLcurrent_save_dir_path)
 
