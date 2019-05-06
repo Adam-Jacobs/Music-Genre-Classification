@@ -1,7 +1,10 @@
 from tkinter import *
 from tkinter import filedialog
 from tkinter.ttk import *
+import shutil
+import os
 from classification import classification_facade
+from common import file_utils
 
 
 class UI:
@@ -28,13 +31,8 @@ class UI:
         self.classification_result_label = label
 
         # Organise Library Button
-        #button = Button(self.window, text='Organise Library', command=self.organise_library)
-        #button.grid(row=0, column=0)
-
-        # Genre Classification Label
-        #label = Label(self.window, text='No mp3 currently classified')
-        #label.grid(row=0, column=1)
-        #self.classification_result_label = label
+        button = Button(self.window, text='Organise Library', command=self.organise_library)
+        button.grid(row=1, column=0)
 
     def classify_mp3(self):
         file_path = filedialog.askopenfilename(title='Select mp3 file to classify', filetypes=[('mp3 files', '*.mp3')])
@@ -42,13 +40,26 @@ class UI:
         self.update_prediction(result)
 
     def organise_library(self):
-        library_path = filedialog.askdirectory(title='Select your music Library')
-        #result = classification_facade.classify(file_path)
-        # Find all paths of mp3 files only within library
-        # Classify each music file within directory
-        # Create new directory
-        # Organise songs into their genre
+        library_path = filedialog.askdirectory(title='Select Your Music Library Directory')
+        mp3_paths = file_utils.get_files(library_path, '.mp3')
 
+        results_dictionary = {}
+        for path in mp3_paths:
+            result = str(classification_facade.classify(path))
+            if result in results_dictionary.keys():
+                results_dictionary[result].append(path)
+            else:
+                results_dictionary[result] = [path]
+
+        new_dir_path = os.path.join(os.path.dirname(library_path), 'Organised Library')
+        os.makedirs(new_dir_path)
+
+        for key in results_dictionary.keys():
+            for path in results_dictionary[key]:
+                genre_dir_path = os.path.join(new_dir_path, key)
+                if not os.path.isdir(genre_dir_path):
+                    os.makedirs(genre_dir_path)
+                shutil.copy(path, genre_dir_path)
 
     def update_prediction(self, prediction):
         self.classification_result_label.config(text=prediction)

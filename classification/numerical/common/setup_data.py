@@ -4,17 +4,16 @@ import pandas as pd
 import tqdm
 
 
-if __name__ == "__main__":
-    numerical_unsorted = np.genfromtxt("..\\..\\Feature Extraction\\numerical features\\data\\features.csv",
-                                       dtype=None, delimiter=',', encoding='utf8')
+def setup_data(features_file_path):
+    numerical_unsorted = np.genfromtxt(features_file_path, dtype=None, delimiter=',', encoding='utf8')
 
-    pickle_in = open("..\\..\\dataset labels\\pickles\\training_labels.pickle", "rb")
+    pickle_in = open("..\\..\\dataset labels\\pickles\\training_labels.pickle", "rb") # change to data_loader
     train_labels = pickle.load(pickle_in)
 
-    pickle_in = open("..\\..\\dataset labels\\pickles\\validation_labels.pickle", "rb")
+    pickle_in = open("..\\..\\dataset labels\\pickles\\validation_labels.pickle", "rb") # change to data_loader
     train_labels.extend(pickle.load(pickle_in))
 
-    pickle_in = open("..\\..\\dataset labels\\pickles\\testing_labels.pickle", "rb")
+    pickle_in = open("..\\..\\dataset labels\\pickles\\testing_labels.pickle", "rb") # change to data_loader
     test_labels = pickle.load(pickle_in)
 
     train_values = []
@@ -35,16 +34,6 @@ if __name__ == "__main__":
             values = list(numerical_unsorted[numerical_unsorted_ids.index(track_id)])
             values.append(';'.join([str(x) for x in labels]))
             test_values.append(values)
-
-    # Save the data
-    print('Saving data to pickles...')
-    pickle_out = open("feature_pickles\\train.pickle", "wb")
-    pickle.dump(train_values, pickle_out)
-    pickle_out.close()
-
-    pickle_out = open("feature_pickles\\test.pickle", "wb")
-    pickle.dump(test_values, pickle_out)
-    pickle_out.close()
 
     print('Saving data to csv...')
     df = pd.DataFrame(train_values)

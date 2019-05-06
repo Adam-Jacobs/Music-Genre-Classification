@@ -1,3 +1,0 @@
-calculate F-measure for predictions to get better accuracy measurement
-add new multi-label to OP-OP
-figure a way to get CNN to not pick same outputs every time

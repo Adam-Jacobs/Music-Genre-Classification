@@ -1,16 +1,26 @@
 import numpy as np
+import pandas as pd
 import pickle
 import sys
-sys.path.append("..\\..\\..\\common")
-import data_manipulation as dm
+import os
+from common import data_manipulation as dm
+from classification.numerical.common import setup_data
 
-def load_numerical_data(normalise=False):
+
+def load_numerical_data(features_file_path, normalise=False):
     print('Loading training & test data...')
-    pickle_in = open("..\\data\\train.pickle", "rb")
-    train = np.array(pickle.load(pickle_in))
+    train_data_path = "classification\\numerical\\data\\train.csv"  # this needs to check for if this set up data comes
+    test_data_path = "classification\\numerical\\data\\test.csv"  # from the same features_file_path currently specified
 
-    pickle_in = open("..\\data\\test.pickle", "rb")
-    test = np.array(pickle.load(pickle_in))
+    if not os.path.isfile(train_data_path) or not os.path.isfile(test_data_path):
+        print('Getting labels for train & test features specified...')
+        setup_data.setup_data(features_file_path)
+
+    train = pd.read_csv(train_data_path, dtype=None, delimiter=',', header=1, encoding='utf8')
+    test = pd.read_csv(test_data_path, dtype=None, delimiter=',', header=1, encoding='utf8')
+
+    train = np.array(train)
+    test = np.array(test)
 
     train_labels = [x.split(';') for x in train[:, 23]]
     test_labels = [x.split(';') for x in test[:, 23]]

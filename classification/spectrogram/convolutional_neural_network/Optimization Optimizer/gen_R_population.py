@@ -22,16 +22,16 @@ print('Loading training & test data...')
 pickle_in = open("..\\feature_pickles\\\downscaled3\\training_features.pickle", "rb")
 train_features = pickle.load(pickle_in)
 
-pickle_in = open("..\\..\\..\\dataset labels\\pickles\\training_labels.pickle", "rb")
+pickle_in = open("..\\..\\..\\..\\dataset labels\\pickles\\training_labels.pickle", "rb")
 train_labels = pickle.load(pickle_in)
 
-pickle_in = open("..\\..\\..\\dataset labels\\pickles\\validation_labels.pickle", "rb")
+pickle_in = open("..\\..\\..\\..\\dataset labels\\pickles\\validation_labels.pickle", "rb")
 train_labels.extend(pickle.load(pickle_in))
 
 pickle_in = open("..\\feature_pickles\\\downscaled3\\test_features.pickle", "rb")
 test_features = pickle.load(pickle_in)
 
-pickle_in = open("..\\..\\..\\dataset labels\\pickles\\testing_labels.pickle", "rb")
+pickle_in = open("..\\..\\..\\..\\dataset labels\\pickles\\testing_labels.pickle", "rb")
 test_labels = pickle.load(pickle_in)
 
 # train_features = train_features/255.0 # is normalisation needed?

@@ -10,7 +10,7 @@ import model_attributes as MA
 # TODO - Add functionality for dynamic maximums based on memory allowance
 # TODO - (for RL NN) Add functionality to take into account training time as a reward-To learn about diminishing returns
 # TODO - expose only relevant methods to an outside script
-# TODO - Add Dropout layer babyyy
+# TODO - Add Dropout layer
 
 model_attributes = MA.ModelAttributes()
 

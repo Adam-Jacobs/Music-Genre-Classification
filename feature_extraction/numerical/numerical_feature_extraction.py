@@ -43,10 +43,13 @@ def extract_features(track_path, include_path=False):
     return features
 
 
-if __name__ == '__main__':
-    track_paths = utils.get_files("Q:\\fma_full")
+def extract_featrues_directory(dir_path, resume=False):
+    track_paths = utils.get_files(dir_path, '.mp3')
 
-    resume_interval = 100
+    if resume:
+        resume_interval = 100
+    else:
+        resume_interval = len(track_paths + 1)  # need to check  if this works
 
     for i in range(len(os.listdir("data")) * resume_interval, len(track_paths), resume_interval):
         tracks = []
